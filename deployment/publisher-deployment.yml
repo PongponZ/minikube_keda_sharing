@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: publisher
+  namespace: default
+  labels:
+    app: publisher
+spec:
+  selector:
+    matchLabels:
+      app: publisher
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  publisher
+    spec:
+      containers:
+      - name: publisher
+        image: minikube-publisher:1.0.1
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          tcpSocket:
+            port: publisher-port
+          initialDelaySeconds: 10
+          timeoutSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /
+            port: publisher-port
+          initialDelaySeconds: 10
+          timeoutSeconds: 30
+        env:
+        - name: PORT
+          value: ":3000"
+        - name: RABBITMQ_HOST
+          value: rabbitmq-local
+        - name: RABBITMQ_PORT
+          value: "5672"
+        - name: RABBITMQ_USER
+          value: "user"
+        - name: RABBITMQ_PASSWORD
+          value: "2zcB2936e3m4Lt3f"
+        - name: PUBLISH_QUEUE
+          value: "super_duper_queue"
+        ports:
+        - containerPort:  3000
+          name:  publisher-port
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: publisher-svc
+  namespace: default
+spec:
+  selector:
+    app: publisher
+  type: NodePort
+  ports:
+  - name: publisher-svc
+    protocol: TCP
+    port: 80
+    targetPort: publisher-port
+    nodePort: 30001

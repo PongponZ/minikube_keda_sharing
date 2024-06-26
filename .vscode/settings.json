@@ -1,6 +1,10 @@
 {
     "cSpell.words": [
+        "amqp",
         "bitnami",
+        "godotenv",
+        "gofiber",
+        "joho",
         "KEDA",
         "rabbitmq"
     ]

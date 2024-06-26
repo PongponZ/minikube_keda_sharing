@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+  namespace: default
+  labels:
+    app: consumer
+spec:
+  selector:
+    matchLabels:
+      app: consumer
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  consumer
+    spec:
+      containers:
+      - name: consumer
+        image: minikube-consumer:1.0.1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: RABBITMQ_HOST
+          value: rabbitmq-local
+        - name: RABBITMQ_PORT
+          value: "5672"
+        - name: RABBITMQ_USER
+          value: "user"
+        - name: RABBITMQ_PASSWORD
+          value: "2zcB2936e3m4Lt3f"
+        - name: PUBLISH_QUEUE
+          value: "super_duper_queue"
+        - name: SLEEP_TIME
+          value: "5"
+      restartPolicy: Always

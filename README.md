@@ -1,8 +1,11 @@
-# Prepare Environment
+# Minikube keda sharing
+
+## Prepare Environment
 
 0. Install these tools
     - [kubectl](https://kubernetes.io/docs/tasks/tools/)
     - [helm](https://helm.sh/docs/intro/install/)
+    - [lens](https://k8slens.dev/)
 
 1. install minikube with brew
 
@@ -47,3 +50,23 @@
     ```bash
     kubectl port-forward --namespace default svc/rabbitmq-local 15672:15672
     ```
+
+    4.4 retrieve user and password
+
+    1. run command below to get pod
+
+        ```bash
+        kubectl get pod
+        ```
+
+        ![image](assets/get-pod.png)
+
+    2. run command below to get environment of pod
+
+        ```bash
+        kubectl exec -it <pod-name> -- env
+        ```
+
+        ![image](assets/get-env-pod.png)
+
+## Deploy our application
