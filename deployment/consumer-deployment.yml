@@ -32,4 +32,6 @@ spec:
           value: "super_duper_queue"
         - name: SLEEP_TIME
           value: "5"
+        - name: LIMIT_CONSUME
+          value: "100"
       restartPolicy: Always

@@ -24,6 +24,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to convert sleep time to integer: %s", err)
 	}
+	limitConsumeEnv := os.Getenv("LIMIT_CONSUME")
+	limitConsume, err := strconv.Atoi(limitConsumeEnv)
+	if err != nil {
+		log.Fatalf("Failed to convert limit consume to integer: %s", err)
+	}
 
 	amqpURL := fmt.Sprintf("amqp://%s:%s@%s:%s/", rabbitmqUser, rabbitmqPassword, rabbitmqHost, rabbitmqPort)
 	conn, err := amqp.Dial(amqpURL)
@@ -52,7 +57,6 @@ func main() {
 	}
 
 	bulk := []amqp.Delivery{}
-	limit := 100
 
 	waitTimeOut := time.After(10 * time.Second)
 
@@ -60,7 +64,7 @@ func main() {
 		select {
 		case message := <-messages:
 			bulk = append(bulk, message)
-			if len(bulk) == limit {
+			if len(bulk) == limitConsume {
 				for _, message := range bulk {
 					message.Ack(false)
 				}
