@@ -7,10 +7,19 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: consumer
-  pollingInterval: 60
-  cooldownPeriod: 180
+  pollingInterval: 5
+  cooldownPeriod: 30
   minReplicaCount: 0
   maxReplicaCount: 3
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleUp:
+          policies:
+            - periodSeconds: 5
+              type: Pods
+              value: 1
+          
   triggers:
     - type: rabbitmq
       metadata:
@@ -18,5 +27,5 @@ spec:
         protocol: auto
         vhostName: /
         mode: QueueLength
-        value: "30000"
+        value: "3000"
         queueName: super_duper_queue

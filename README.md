@@ -70,3 +70,8 @@
         ![image](assets/get-env-pod.png)
 
 ## Deploy our application
+
+
+
+# Reference
+- https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
