@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: consumer
-        image: minikube-consumer:1.0.1
+        image: minikube-consumer:1.0.2
         imagePullPolicy: IfNotPresent
         env:
         - name: RABBITMQ_HOST

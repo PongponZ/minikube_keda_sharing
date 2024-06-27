@@ -51,21 +51,14 @@ func main() {
 		log.Fatalf("Failed to register a consumer: %s", err)
 	}
 
-	blockProcess := make(chan bool)
 	bulk := []amqp.Delivery{}
 	limit := 100
 
 	waitTimeOut := time.After(10 * time.Second)
 
-	for message := range messages {
+	for {
 		select {
-		case <-waitTimeOut:
-			if len(bulk) > 0 {
-				for _, m := range bulk {
-					m.Ack(false)
-				}
-			}
-		default:
+		case message := <-messages:
 			bulk = append(bulk, message)
 			if len(bulk) == limit {
 				for _, message := range bulk {
@@ -75,8 +68,12 @@ func main() {
 				time.Sleep(time.Duration(sleepTime) * time.Second)
 				waitTimeOut = time.After(10 * time.Second)
 			}
+		case <-waitTimeOut:
+			if len(bulk) > 0 {
+				for _, m := range bulk {
+					m.Ack(false)
+				}
+			}
 		}
 	}
-
-	<-blockProcess
 }
