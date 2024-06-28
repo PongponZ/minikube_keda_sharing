@@ -58,7 +58,7 @@ func main() {
 
 	bulk := []amqp.Delivery{}
 
-	waitTimeOut := time.After(10 * time.Second)
+	waitTimeOut := time.After(5 * time.Second)
 
 	for {
 		select {

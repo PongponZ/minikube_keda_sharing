@@ -37,6 +37,3 @@ deploy-app:
 	minikube image rm minikube-consumer:1.0.2
 	minikube image load minikube-publisher:1.0.2
 	minikube image load minikube-consumer:1.0.2
-
-app-url:
-	minikube service publisher-svc --url

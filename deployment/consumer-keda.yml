@@ -8,24 +8,32 @@ spec:
     kind: Deployment
     name: consumer
   pollingInterval: 5
-  cooldownPeriod: 30
+  cooldownPeriod: 10
   minReplicaCount: 0
-  maxReplicaCount: 3
+  maxReplicaCount: 10
   advanced:
     horizontalPodAutoscalerConfig:
       behavior:
         scaleUp:
+          stabilizationWindowSeconds: 0
           policies:
-            - periodSeconds: 5
-              type: Pods
-              value: 1
-          
+            - periodSeconds: 1
+              type: Percent
+              value: 100
+        scaleDown:
+          stabilizationWindowSeconds: 0
+          selectPolicy: Max # scale base on max value in range, Default is Max
+          policies:
+            - periodSeconds: 1
+              type: Percent
+              value: 100
+
   triggers:
     - type: rabbitmq
       metadata:
-        host: amqp://user:2zcB2936e3m4Lt3f@10.103.205.198:5672/vhost
+        host: amqp://user:MjKhazDTPw8PREaS@10.110.241.12:5672/vhost
         protocol: auto
         vhostName: /
         mode: QueueLength
-        value: "3000"
+        value: "10000"
         queueName: super_duper_queue
