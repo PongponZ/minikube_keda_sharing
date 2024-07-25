@@ -3,26 +3,54 @@ kind: ScaledObject
 metadata:
   name: consumer-keda
 spec:
+  # specifies which deployment to auto scale
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
-    name: consumer
-  pollingInterval: 5
+    kind: Deployment # match with `kind` of target deployment
+    name: consumer-deployment # match with `metadata.name` of target deployment
+
+  # interval time to get metric from resource
+  # Default: 30 (seconds)
+  pollingInterval: 1
+
+  # duration after KEDA becomes `inactive state` to set replica to 0 (see `trigger.metadata.activationValue` for more detail)
+  # only effect when minReplica = 0
+  # Default: 300 (seconds)
   cooldownPeriod: 10
+
+  # minimum replica count that KEDA can set
+  # Default: 0
   minReplicaCount: 0
+
+  # maximum replica count that KEDA can set
+  # Default: 300
   maxReplicaCount: 10
+
   advanced:
     horizontalPodAutoscalerConfig:
       behavior:
         scaleUp:
+          # amount of time to look back for each previous metric values
+          # Default: 0 (seconds)
           stabilizationWindowSeconds: 0
+          # which metric value in stabilizationWindowSeconds range to use,
+          # can be `Max` or `Min`
+          # Default: Max
+          selectPolicy: Max
           policies:
+            # duration between each scale up event that we allow
             - periodSeconds: 1
+              # type of replica amount can be scale in each scale event
+              # can be `Pods` or `Percent`
               type: Percent
+              # scale amount based on type
               value: 100
+
+        # same as scale up but for scale down
         scaleDown:
+          # Default: 300 (seconds)
           stabilizationWindowSeconds: 0
-          selectPolicy: Max # scale base on max value in range, Default is Max
+          selectPolicy: Max
           policies:
             - periodSeconds: 1
               type: Percent
@@ -31,9 +59,21 @@ spec:
   triggers:
     - type: rabbitmq
       metadata:
-        host: amqp://user:MjKhazDTPw8PREaS@10.110.241.12:5672/vhost
+        # RabbitMQ host to get queue count
+        host: amqp://rabbitmq:rabbitmqpw@rabbitmq-local.default.svc.cluster.local:5672/vhost
         protocol: auto
         vhostName: /
+
+        # which value to as metric
+        # Can be `MessageRate` (aka. PublishRate) or `QueueLength` (aka. QueueCount)
         mode: QueueLength
+
+        # metric value per 1 replica
         value: "10000"
+
+        # rabbitmq queue name to get queue count
         queueName: super_duper_queue
+
+        # minimum metric value to make KEDA becomes `active state` and start auto scaling
+        # Default: 0
+        activationValue: "0"
