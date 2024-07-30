@@ -23,7 +23,7 @@ spec:
   minReplicaCount: 0
 
   # maximum replica count that KEDA can set
-  # Default: 300
+  # Default: 100
   maxReplicaCount: 10
 
   advanced:
