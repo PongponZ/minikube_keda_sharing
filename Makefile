@@ -29,8 +29,14 @@ deploy-app:
 	kubectl apply -f deployment/publisher-deployment.yml
 	kubectl apply -f deployment/consumer-deployment.yml
 
-deploy-keda:
-	kubectl apply -f deployment/consumer-keda.yml
+deploy-keda-basic:
+	kubectl apply -f deployment/consumer-keda-basic.yml
+
+deploy-keda-basic-to-advance:
+	kubectl apply -f deployment/consumer-keda-basic-to-advance.yml
+
+deploy-keda-advance:
+	kubectl apply -f deployment/consumer-keda-advance.yml
 
 get-keda:
 	kubectl get scaledobjects.keda.sh
@@ -46,3 +52,6 @@ rabbitmq-forward-port:
 
 rabbitmq-auth-info:
 	kubectl exec -it pod/rabbitmq-local-0 -- env | grep 'RABBITMQ_USERNAME\|RABBITMQ_PASSWORD'
+
+delete-cluster:
+	minikube delete

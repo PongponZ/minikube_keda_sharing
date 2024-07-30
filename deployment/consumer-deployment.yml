@@ -34,4 +34,6 @@ spec:
               value: "1"
             - name: LIMIT_CONSUME
               value: "100"
+            - name: WAIT_TIME
+              value: "5"
       restartPolicy: Always

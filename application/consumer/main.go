@@ -24,6 +24,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to convert sleep time to integer: %s", err)
 	}
+	waitTimeEnv := os.Getenv("WAIT_TIME")
+	waitTime, err := strconv.Atoi(waitTimeEnv)
+	if err != nil {
+		log.Fatalf("Failed to convert wait time to integer: %s", err)
+	}
+
 	limitConsumeEnv := os.Getenv("LIMIT_CONSUME")
 	limitConsume, err := strconv.Atoi(limitConsumeEnv)
 	if err != nil {
@@ -58,7 +64,7 @@ func main() {
 
 	bulk := []amqp.Delivery{}
 
-	waitTimeOut := time.After(5 * time.Second)
+	waitTimeOut := time.After(time.Duration(waitTime) * time.Second)
 
 	for {
 		select {
@@ -70,7 +76,7 @@ func main() {
 				}
 				bulk = []amqp.Delivery{}
 				time.Sleep(time.Duration(sleepTime) * time.Second)
-				waitTimeOut = time.After(10 * time.Second)
+				waitTimeOut = time.After(time.Duration(waitTime) * time.Second)
 			}
 		case <-waitTimeOut:
 			if len(bulk) > 0 {

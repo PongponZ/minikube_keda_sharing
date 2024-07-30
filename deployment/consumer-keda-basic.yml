@@ -1,0 +1,49 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: consumer-keda
+spec:
+  # specifies which deployment to auto scale
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment # match with `kind` of target deployment
+    name: consumer-deployment # match with `metadata.name` of target deployment
+
+  # interval time to get metric from resource
+  # Default: 30 (seconds)
+  pollingInterval: 1
+
+  # duration after KEDA becomes `inactive state` to set replica to 0 (see `trigger.metadata.activationValue` for more detail)
+  # only effect when minReplica = 0
+  # Default: 300 (seconds)
+  cooldownPeriod: 10
+
+  # minimum replica count that KEDA can set
+  # Default: 0
+  minReplicaCount: 0
+
+  # maximum replica count that KEDA can set
+  # Default: 100
+  maxReplicaCount: 10
+  
+  triggers:
+    - type: rabbitmq
+      metadata:
+        # RabbitMQ host to get queue count
+        host: amqp://rabbitmq:rabbitmqpw@rabbitmq-local.default.svc.cluster.local:5672/vhost
+        protocol: auto
+        vhostName: /
+
+        # which value to as metric
+        # Can be `MessageRate` (aka. PublishRate) or `QueueLength` (aka. QueueCount)
+        mode: QueueLength
+
+        # metric value per 1 replica
+        value: "2000"
+
+        # rabbitmq queue name to get queue count
+        queueName: super_duper_queue
+
+        # minimum metric value to make KEDA becomes `active state` and start auto scaling
+        # Default: 0
+        activationValue: "0"
